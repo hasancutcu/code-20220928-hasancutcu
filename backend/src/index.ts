@@ -1,9 +1,5 @@
-import fs from 'fs';
+import { BmiUtil } from './services/bmi-util';
 
-const stream = fs.createReadStream('./db/db.json', {highWaterMark: 150 * 1024,  encoding: 'utf8' });
+const bmiUtil = new BmiUtil('./data/data.json', './data/result.json');
 
-stream.on('data', (chunk) => {
-  console.log(chunk);
-  console.log("***************************");
-  
-});
+bmiUtil.read();
