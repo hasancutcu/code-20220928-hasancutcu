@@ -1,5 +1,6 @@
 import fs from 'fs';
-import { IPhysical } from '../common/physical';
+import { IPhysical, Physical } from '../common/physical';
+import { PhysicalResult } from '../common/physical-result';
 
 export class BmiUtil {
   readPath: string;
@@ -21,9 +22,26 @@ export class BmiUtil {
       const buffer = JSON.parse(chunk.toString());
 
       this.iPyhsicalList = this.iPyhsicalList.concat(buffer);
-
-      console.log(this.iPyhsicalList.length);
+      console.log(this.iPyhsicalList, 'inside func');
     });
+    console.log(this.iPyhsicalList, 'outside func');
+  }
+
+  write(): void {
+    //Create the new list and calc the BMI, category and risk
+    console.log(this.iPyhsicalList);
+
+    const physicalList: Physical[] = this.iPyhsicalList.map(
+      (p) => new Physical(p)
+    );
+    console.log(physicalList.length);
+
+    const physicalResult = new PhysicalResult(physicalList);
+    const stream = fs.createWriteStream(this.writePath, {
+      encoding: 'utf8',
+    });
+
+    stream.write(JSON.stringify(this.iPyhsicalList));
   }
 
   // read(readPath = this.readPath): Promise<string> {
