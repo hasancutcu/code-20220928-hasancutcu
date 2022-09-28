@@ -21,3 +21,4 @@ documentation
 automation build / test / deployment pipeline 
 
 ## Table 1
+<img width="816" alt="table1" src="https://user-images.githubusercontent.com/73205794/192788834-4248c3f7-ee43-4877-950b-8740abfe6796.png">
