@@ -1,13 +1,10 @@
 import fs from 'fs';
-import { IPhysical, Physical } from '../common/physical';
-import { PhysicalResult } from '../common/physical-result';
-import { IBmiRecord } from '../common/bmi-record';
-
 import Chain, { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { streamArray } from 'stream-json/streamers/StreamArray';
+import { IPhysical, Physical } from '../common/physical';
+import { IBmiRecord } from '../common/bmi-record';
 import { BmiCategory } from '../common/types/bmi-category';
-const { stringer } = require('stream-json/Stringer');
 
 export class BmiUtil {
   totalOverWeight: number = 0;
@@ -46,7 +43,5 @@ export class BmiUtil {
       return `[${JSON.stringify(bmiRecord.value)}`;
     }
     return `,${JSON.stringify(bmiRecord.value)}`;
-
-    //return JSON.stringify(bmiRecord);
   }
 }
