@@ -37,3 +37,25 @@ Objectives are as follow <sub>(copied from the org. document)</sub>
 
 > - Write a solid production grade typescript/javascript Program to solve this problem, imagine this will be used in product for 1 Lac patients.We are only interested in a standalone backend application, we are NOT expecting a UI, webpage, frontend, Mobile App, microsite etc. We want to see what optimal solution you come up with to scale for larger JSON data and perform calculations quickly and write the output efficiently. Feel free to explore and use the standard Node libraries or any open source node modules
 > - Automate the setup, build, test, package and run using your favourite tools
+
+## Installation and Usage
+
+If nodejs is not installed, install it from [here](https://nodejs.org/en/download/)
+
+To clone the repo and run it locally, run the following commands in your terminal
+
+```bash
+gh repo clone hasancutcu/code-20220928-hasancutcu
+cd code-20220928-hasancutcu/backend
+npm run start:dev
+```
+
+In terminal, you should see the following output;
+
+```bash
+Total overweight number is 'XX'
+```
+
+To see new json file with the new 3 fields, you can check './backend/data/result.json' file.
+
+To test with over 500000 records, you can use this file './backend/data/bigdata.json'
