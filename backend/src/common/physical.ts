@@ -24,7 +24,11 @@ export class Physical implements IPhysical {
   }
 
   calculateBMI(): number {
-    return this.WeightKg / Math.pow(this.HeightCm / 100, 2);
+    return this.round(this.WeightKg / Math.pow(this.HeightCm / 100, 2), 2);
+  }
+  round(num: number, precision: number): number {
+    const factor = Math.pow(10, precision);
+    return Math.round(num * factor) / factor;
   }
   setBmiCategoryAndHealthRisk(): void {
     if (this.BMI === undefined) return;

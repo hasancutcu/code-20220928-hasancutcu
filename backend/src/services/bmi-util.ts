@@ -1,70 +1,52 @@
 import fs from 'fs';
 import { IPhysical, Physical } from '../common/physical';
 import { PhysicalResult } from '../common/physical-result';
+import { IBmiRecord } from '../common/bmi-record';
+
+import Chain, { chain } from 'stream-chain';
+import { parser } from 'stream-json';
+import { streamArray } from 'stream-json/streamers/StreamArray';
+import { BmiCategory } from '../common/types/bmi-category';
+const { stringer } = require('stream-json/Stringer');
 
 export class BmiUtil {
+  totalOverWeight: number = 0;
   readPath: string;
   writePath: string;
-  iPyhsicalList: IPhysical[] = [];
+  readPipeline?: Chain;
 
   constructor(readPath: string, writePath: string) {
     this.readPath = readPath;
     this.writePath = writePath;
   }
 
-  read(): void {
-    const stream = fs.createReadStream(this.readPath, {
-      highWaterMark: 150 * 1024,
-      encoding: 'utf8',
-    });
+  initPipeline(): void {
+    this.readPipeline = chain([
+      fs.createReadStream(this.readPath),
+      parser(),
+      streamArray(),
+      (obj: any) => this.transform(obj),
+      fs.createWriteStream(this.writePath),
+    ]);
 
-    stream.on('data', (chunk: IPhysical[]) => {
-      const buffer = JSON.parse(chunk.toString());
-
-      this.iPyhsicalList = this.iPyhsicalList.concat(buffer);
-      console.log(this.iPyhsicalList, 'inside func');
+    this.readPipeline.on('end', () => {
+      fs.appendFile(this.writePath, ']', function (err) {
+        if (err) throw err;
+      });
     });
-    console.log(this.iPyhsicalList, 'outside func');
   }
 
-  write(): void {
-    //Create the new list and calc the BMI, category and risk
-    console.log(this.iPyhsicalList);
+  transform(bmiRecord: IBmiRecord): string {
+    const newIPhysical: IPhysical = bmiRecord.value;
+    const physical = new Physical(newIPhysical);
+    if (physical.BmiCategory === BmiCategory.OverWeight) this.totalOverWeight++;
+    bmiRecord.value = physical;
 
-    const physicalList: Physical[] = this.iPyhsicalList.map(
-      (p) => new Physical(p)
-    );
-    console.log(physicalList.length);
+    if (bmiRecord.key === 0) {
+      return `[${JSON.stringify(bmiRecord.value)}`;
+    }
+    return `,${JSON.stringify(bmiRecord.value)}`;
 
-    const physicalResult = new PhysicalResult(physicalList);
-    const stream = fs.createWriteStream(this.writePath, {
-      encoding: 'utf8',
-    });
-
-    stream.write(JSON.stringify(this.iPyhsicalList));
+    //return JSON.stringify(bmiRecord);
   }
-
-  // read(readPath = this.readPath): Promise<string> {
-  //   return new Promise((resolve, reject) => {
-  //     fs.readFile(this.readPath, 'utf8', (err, data) => {
-  //       if (err) {
-  //         reject(err);
-  //       } else {
-  //         resolve(data);
-  //       }
-  //     });
-  //   });
-  // }
-
-  // write(data: string, writePath = this.writePath): Promise<void> {
-  //   return new Promise((resolve, reject) => {
-  //     fs.writeFile(writePath, data, (err) => {
-  //       if (err) {
-  //         reject(err);
-  //       } else {
-  //         resolve();
-  //       }
-  //     });
-  //   });
-  // }
 }
